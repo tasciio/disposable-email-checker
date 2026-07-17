@@ -83,10 +83,11 @@ Validate changes with:
 npm run validate:data
 ```
 
-The included file is a complete, pinned snapshot of the CC0-licensed
-`disposable-email-domains` blocklist with 7,936 entries. It is not downloaded or updated at
-runtime. Production accuracy still depends on reviewing upstream changes, local additions,
-removals, and false positives. The exact source commit and checksum are documented in the
+The included file contains a complete, pinned snapshot of the CC0-licensed
+`disposable-email-domains` blocklist plus reviewed local changes, currently totaling 7,937
+entries. It is not downloaded or updated at runtime. Production accuracy still depends on
+reviewing upstream changes, local additions, removals, and false positives. The exact source
+commit, local changes, and checksums are documented in the
 [blacklist policy](data/README.md#upstream-snapshot).
 
 ## Public API protections

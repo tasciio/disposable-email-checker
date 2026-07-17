@@ -20,6 +20,13 @@ blocklist from this pinned snapshot:
 The upstream data is dedicated to the public domain and can be redistributed here. The Worker
 uses this checked-in snapshot and never downloads data during a build or request.
 
+## Local changes
+
+- `luckfeed.com` was added locally on 2026-07-17 by maintainer request.
+
+The deployed `domains.txt`, including local changes, contains 7,937 entries and has SHA-256
+`77d79c9ce1a1961b18f13072814078d1427ae898a9d0b07c8108804936d3c032`.
+
 ## File format
 
 - UTF-8 text with one lowercase canonical ASCII/Punycode domain per line.
@@ -45,7 +52,7 @@ process.
 2. Confirm that the upstream license still permits redistribution.
 3. Replace `domains.txt` with the complete file from that commit and review the diff, preserving
    intentional local additions and removals.
-4. Update the commit, import date, entry count, and SHA-256 above.
+4. Update the upstream metadata, local-change record, deployed entry count, and SHA-256 above.
 5. Update the snapshot assertions in `test/domain-list.test.ts` and run `npm run check`.
 
 ## Validation
