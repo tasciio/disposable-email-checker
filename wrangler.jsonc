@@ -6,7 +6,8 @@
   "minify": true,
   "workers_dev": true,
   "observability": {
-    "enabled": true
+    // Persistent invocation logs include request URLs, which can contain email addresses.
+    "enabled": false
   },
   "vars": {
     // Use "*" for a public browser API, or a comma-separated origin allowlist.
@@ -31,4 +32,3 @@
     }
   ]
 }
-

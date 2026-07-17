@@ -23,6 +23,9 @@ export const OPENAPI_DOCUMENT = {
               },
             },
           },
+          "403": { $ref: "#/components/responses/Error" },
+          "414": { $ref: "#/components/responses/Error" },
+          "500": { $ref: "#/components/responses/Error" },
         },
       },
     },
@@ -46,7 +49,10 @@ export const OPENAPI_DOCUMENT = {
         responses: {
           "200": { $ref: "#/components/responses/CheckResult" },
           "400": { $ref: "#/components/responses/Error" },
+          "403": { $ref: "#/components/responses/Error" },
+          "414": { $ref: "#/components/responses/Error" },
           "429": { $ref: "#/components/responses/Error" },
+          "500": { $ref: "#/components/responses/Error" },
           "503": { $ref: "#/components/responses/Error" },
         },
       },
@@ -78,9 +84,12 @@ export const OPENAPI_DOCUMENT = {
         responses: {
           "200": { $ref: "#/components/responses/CheckResult" },
           "400": { $ref: "#/components/responses/Error" },
+          "403": { $ref: "#/components/responses/Error" },
           "413": { $ref: "#/components/responses/Error" },
+          "414": { $ref: "#/components/responses/Error" },
           "415": { $ref: "#/components/responses/Error" },
           "429": { $ref: "#/components/responses/Error" },
+          "500": { $ref: "#/components/responses/Error" },
           "503": { $ref: "#/components/responses/Error" },
         },
       },
@@ -91,11 +100,9 @@ export const OPENAPI_DOCUMENT = {
       CheckResult: {
         type: "object",
         additionalProperties: false,
-        required: ["domain", "disposable", "matchedDomain"],
+        required: ["disposable"],
         properties: {
-          domain: { type: "string" },
           disposable: { type: "boolean" },
-          matchedDomain: { type: ["string", "null"] },
         },
       },
       Error: {
@@ -117,7 +124,7 @@ export const OPENAPI_DOCUMENT = {
     },
     responses: {
       CheckResult: {
-        description: "The normalized domain and its blacklist status.",
+        description: "Whether the supplied email domain or domain is disposable.",
         content: {
           "application/json": { schema: { $ref: "#/components/schemas/CheckResult" } },
         },

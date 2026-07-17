@@ -3,6 +3,23 @@
 `domains.txt` is the API's source of truth. It is intentionally reviewed in Git rather than
 downloaded from an untrusted source during a build or request.
 
+## Upstream snapshot
+
+`domains.txt` contains the complete
+[`disposable-email-domains`](https://github.com/disposable-email-domains/disposable-email-domains)
+blocklist from this pinned snapshot:
+
+- Commit:
+  [`66c137dc670a0981cec1557b11b27b8c7f572502`](https://github.com/disposable-email-domains/disposable-email-domains/commit/66c137dc670a0981cec1557b11b27b8c7f572502)
+- Imported: 2026-07-17
+- Entries: 7,936
+- SHA-256: `6812426525ad0b60e53104f47065f3fde0b7af48a85a3cbecb1f7e03a49e524e`
+- License:
+  [CC0 1.0](https://github.com/disposable-email-domains/disposable-email-domains/blob/66c137dc670a0981cec1557b11b27b8c7f572502/LICENSE.txt)
+
+The upstream data is dedicated to the public domain and can be redistributed here. The Worker
+uses this checked-in snapshot and never downloads data during a build or request.
+
 ## File format
 
 - UTF-8 text with one lowercase canonical ASCII/Punycode domain per line.
@@ -12,14 +29,24 @@ downloaded from an untrusted source during a build or request.
 
 ## Classification standard
 
-A domain belongs in the file when public evidence shows that it provides temporary or
-disposable inboxes intended to receive mail without maintaining a normal long-lived mailbox.
-Ordinary email services, privacy relays, forwarding services, public suffixes, and shared
-infrastructure domains are excluded to limit false positives.
+A domain belongs in the file when the pinned upstream snapshot or public evidence identifies it
+as providing temporary or disposable inboxes. Ordinary email services, privacy relays, public
+suffixes, and shared infrastructure domains should be removed when evidence shows that listing
+them creates false positives.
 
-Every addition or removal should arrive through a pull request or the matching issue template
-with enough evidence for another contributor to verify it. See [CONTRIBUTING.md](../CONTRIBUTING.md)
-for the complete process.
+Bulk upstream snapshots cannot guarantee permanent accuracy. Every local addition or removal
+should arrive through a pull request or the matching issue template with enough evidence for
+another contributor to verify it. See [CONTRIBUTING.md](../CONTRIBUTING.md) for the complete
+process.
+
+## Updating the upstream snapshot
+
+1. Select and record a specific upstream commit; never import from a moving branch reference.
+2. Confirm that the upstream license still permits redistribution.
+3. Replace `domains.txt` with the complete file from that commit and review the diff, preserving
+   intentional local additions and removals.
+4. Update the commit, import date, entry count, and SHA-256 above.
+5. Update the snapshot assertions in `test/domain-list.test.ts` and run `npm run check`.
 
 ## Validation
 
@@ -29,4 +56,5 @@ Run:
 npm run validate:data
 ```
 
-The test suite checks format, normalization, duplicates, sorting, and representative matches.
+The test suite checks the pinned snapshot checksum and entry count as well as format,
+normalization, duplicates, sorting, and representative matches.

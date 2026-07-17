@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
-  checkDomain,
   domainFromEmail,
+  isDisposableDomain,
   normalizeDomain,
   parseDomainList,
 } from "../src/domain";
@@ -48,20 +48,12 @@ describe("blacklist", () => {
   const blacklist = new Set(["mailinator.com", "yopmail.com"]);
 
   it("matches exact entries and their subdomains", () => {
-    expect(checkDomain("mailinator.com", blacklist)).toEqual({
-      domain: "mailinator.com",
-      disposable: true,
-      matchedDomain: "mailinator.com",
-    });
-    expect(checkDomain("mx.eu.mailinator.com", blacklist)).toEqual({
-      domain: "mx.eu.mailinator.com",
-      disposable: true,
-      matchedDomain: "mailinator.com",
-    });
+    expect(isDisposableDomain("mailinator.com", blacklist)).toBe(true);
+    expect(isDisposableDomain("mx.eu.mailinator.com", blacklist)).toBe(true);
   });
 
   it("does not suffix-match unrelated domains", () => {
-    expect(checkDomain("notmailinator.com", blacklist).disposable).toBe(false);
+    expect(isDisposableDomain("notmailinator.com", blacklist)).toBe(false);
   });
 
   it("validates maintained list entries", () => {
@@ -71,4 +63,3 @@ describe("blacklist", () => {
     expect(() => parseDomainList("\n# only comments\n")).toThrow(/empty/u);
   });
 });
-

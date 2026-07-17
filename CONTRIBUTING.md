@@ -20,6 +20,14 @@ request or disposable-domain issue.
 Run `npm run validate:data` before submitting. The automated test rejects duplicates, invalid
 domains, non-canonical entries, and incorrect sorting.
 
+## Upstream snapshot updates
+
+The deployed list is a complete, pinned snapshot of the CC0-licensed
+`disposable-email-domains` project plus any reviewed local changes. Snapshot updates must use a
+specific upstream commit, include the complete upstream file, preserve intentional local changes,
+and update the provenance metadata and snapshot assertions in `data/README.md` and
+`test/domain-list.test.ts`. Review the complete diff for likely false positives before submitting.
+
 ## False positives and removals
 
 Open the false-positive issue template and explain the legitimate use of the domain. Evidence

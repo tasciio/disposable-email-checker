@@ -5,12 +5,6 @@ const ASCII_DOMAIN_LABEL = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/;
 const EMAIL_LOCAL_PART = /^[A-Za-z0-9!#$%&'*+\-/=?^_`{|}~.]+$/;
 const FORBIDDEN_DOMAIN_CHARACTERS = /[\u0000-\u0020\u007f/@:\\?#\[\]%]/u;
 
-export interface DomainCheckResult {
-  domain: string;
-  disposable: boolean;
-  matchedDomain: string | null;
-}
-
 /**
  * Converts a user-supplied hostname to canonical ASCII/Punycode form.
  * Returns null for IP addresses, single-label names, or invalid DNS names.
@@ -133,19 +127,19 @@ export function parseDomainList(contents: string): ReadonlySet<string> {
   return domains;
 }
 
-/** Matches both the exact domain and its parent domains. */
-export function checkDomain(
+/** Returns whether the exact domain or one of its parent domains is blacklisted. */
+export function isDisposableDomain(
   domain: string,
   blacklist: ReadonlySet<string>,
-): DomainCheckResult {
+): boolean {
   const labels = domain.split(".");
 
   for (let index = 0; index < labels.length - 1; index += 1) {
     const candidate = labels.slice(index).join(".");
     if (blacklist.has(candidate)) {
-      return { domain, disposable: true, matchedDomain: candidate };
+      return true;
     }
   }
 
-  return { domain, disposable: false, matchedDomain: null };
+  return false;
 }

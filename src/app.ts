@@ -1,4 +1,4 @@
-import { checkDomain, domainFromEmail, normalizeDomain } from "./domain";
+import { domainFromEmail, isDisposableDomain, normalizeDomain } from "./domain";
 import { OPENAPI_DOCUMENT } from "./openapi";
 import type { Env, WorkerApp } from "./types";
 
@@ -194,7 +194,9 @@ function checkInput(
     return errorResponse(400, `invalid_${kind}`, `A valid ${kind} is required.`, cors);
   }
 
-  return jsonResponse(checkDomain(domain, blacklist), 200, cors, { cacheControl });
+  return jsonResponse({ disposable: isDisposableDomain(domain, blacklist) }, 200, cors, {
+    cacheControl,
+  });
 }
 
 function getCheckResponse(

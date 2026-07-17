@@ -13,7 +13,8 @@ You can deploy your own instance, propose blacklist changes, or adapt the projec
 - `GET` and privacy-friendlier `POST` checks for either an email address or domain.
 - Exact and subdomain matching, including internationalized domains through Punycode.
 - Native Cloudflare rate limiting, strict input limits, security headers, and configurable CORS.
-- No database, outbound requests, accounts, secrets, analytics, or email-address logging.
+- No database, outbound requests, accounts, secrets, application analytics, or application
+  request logging.
 
 ## API
 
@@ -35,11 +36,12 @@ Successful response:
 
 ```json
 {
-  "domain": "mailinator.com",
-  "disposable": true,
-  "matchedDomain": "mailinator.com"
+  "disposable": true
 }
 ```
+
+Successful checks return only the boolean classification and never echo the supplied email or
+domain.
 
 Provide exactly one `email` or `domain`. Invalid input is a `400`; oversized POST bodies are
 `413`; unsupported content is `415`; and throttled requests are `429`. The deployed Worker
@@ -81,9 +83,11 @@ Validate changes with:
 npm run validate:data
 ```
 
-The included file is a starter list, not an exhaustive or automatically updated feed.
-Production accuracy depends on reviewing additions, removals, false positives, and the
-licensing of any external list you choose to import.
+The included file is a complete, pinned snapshot of the CC0-licensed
+`disposable-email-domains` blocklist with 7,936 entries. It is not downloaded or updated at
+runtime. Production accuracy still depends on reviewing upstream changes, local additions,
+removals, and false positives. The exact source commit and checksum are documented in the
+[blacklist policy](data/README.md#upstream-snapshot).
 
 ## Public API protections
 
@@ -97,8 +101,8 @@ The Worker applies the following controls before it evaluates the blacklist:
   and conventional email-syntax validation.
 - Generic errors that do not expose stack traces or source-list contents.
 - Restrictive browser/security headers and configurable CORS.
-- No application logging of email addresses. POST avoids placing email addresses in URLs and
-  responses never echo the local part.
+- Persistent Workers invocation logging is disabled because it includes request URLs. POST avoids
+  placing email addresses in URLs, and successful responses never echo any input.
 - A fail-closed `503` response if the rate-limit binding is missing or unavailable.
 
 The service has no database, outbound requests, secrets, or dynamic code execution. Cloudflare
@@ -141,9 +145,10 @@ store Cloudflare credentials in GitHub Actions secrets, never in the repository.
 
 ## Operating a public deployment
 
-Inspect Workers logs for `429` and `5xx` rates. Do not enable request-URL logging without
-considering that GET query strings can contain email addresses. For a high-traffic instance,
-review Cloudflare account limits and consider account-level WAF or bot-management rules.
+Use aggregate Cloudflare metrics to monitor `429` and `5xx` rates. Persistent invocation logging
+is disabled in `wrangler.jsonc`; do not enable it without accounting for email addresses in GET
+query strings and documenting the resulting retention. For a high-traffic instance, review
+Cloudflare account limits and consider account-level WAF or bot-management rules.
 
 The blacklist is bundled as a Wrangler Text module during deployment. Updating the file requires
 a new Worker deployment; there is no runtime storage service or admin mutation endpoint to attack.

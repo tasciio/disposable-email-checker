@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { createApp } from "../src/app";
+import { OPENAPI_DOCUMENT } from "../src/openapi";
 import type { Env } from "../src/types";
 
 const app = createApp(new Set(["mailinator.com", "yopmail.com"]));
@@ -29,6 +30,12 @@ describe("public routes", () => {
     expect(await json(root)).toMatchObject({ version: "1.0.0", blacklistDomains: 2 });
     expect(await json(health)).toEqual({ status: "ok" });
     expect(await json(spec)).toMatchObject({ openapi: "3.1.0" });
+    expect(OPENAPI_DOCUMENT.components.schemas.CheckResult).toEqual({
+      type: "object",
+      additionalProperties: false,
+      required: ["disposable"],
+      properties: { disposable: { type: "boolean" } },
+    });
   });
 
   it("returns generic 404 and 405 errors", async () => {
@@ -45,7 +52,7 @@ describe("public routes", () => {
 });
 
 describe("GET /v1/check", () => {
-  it("checks emails without returning the full email address", async () => {
+  it("checks emails and returns only the disposable result", async () => {
     const response = await app.fetch(
       new Request("https://api.example/v1/check?email=private%2Btag%40mx.mailinator.com", {
         headers: { "CF-Connecting-IP": "203.0.113.7" },
@@ -54,11 +61,7 @@ describe("GET /v1/check", () => {
     );
 
     expect(response.status).toBe(200);
-    expect(await json(response)).toEqual({
-      domain: "mx.mailinator.com",
-      disposable: true,
-      matchedDomain: "mailinator.com",
-    });
+    expect(await json(response)).toEqual({ disposable: true });
     expect(response.headers.get("Cache-Control")).toBe("no-store");
   });
 
@@ -67,11 +70,7 @@ describe("GET /v1/check", () => {
       new Request("https://api.example/v1/check?domain=example.com"),
       testEnv(),
     );
-    expect(await json(response)).toEqual({
-      domain: "example.com",
-      disposable: false,
-      matchedDomain: null,
-    });
+    expect(await json(response)).toEqual({ disposable: false });
     expect(response.headers.get("Cache-Control")).toContain("max-age=300");
   });
 
@@ -99,7 +98,7 @@ describe("POST /v1/check", () => {
     );
 
     expect(response.status).toBe(200);
-    expect(await json(response)).toMatchObject({ disposable: true, matchedDomain: "yopmail.com" });
+    expect(await json(response)).toEqual({ disposable: true });
     expect(response.headers.get("Cache-Control")).toBe("no-store");
   });
 
