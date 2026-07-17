@@ -1,162 +1,111 @@
 # Disposable Email Checker API
 
-A small, community-maintained public API for checking whether an email domain is in an editable
-blacklist. It runs on Cloudflare Workers, has no runtime package dependencies, normalizes
-international domain names, and detects disposable providers used through subdomains.
+A free, community-maintained API that checks whether an email domain appears in a disposable-email blocklist. It runs on Cloudflare Workers and supports exact domains, subdomains, and internationalized domains.
 
-You can deploy your own instance, propose blacklist changes, or adapt the project under the
-[MIT License](LICENSE).
+**Live API:** [https://disposable-email-checker.tasciio.workers.dev](https://disposable-email-checker.tasciio.workers.dev)
 
-## Features
+No API key is required. The public deployment is rate-limited and provided without an uptime guarantee.
 
-- One-command Cloudflare Workers deployment with the blacklist bundled as a text module.
-- `GET` and privacy-friendlier `POST` checks for either an email address or domain.
-- Exact and subdomain matching, including internationalized domains through Punycode.
-- Native Cloudflare rate limiting, strict input limits, security headers, and configurable CORS.
-- No database, outbound requests, accounts, secrets, application analytics, or application
-  request logging.
+## Examples
+
+Check a disposable domain:
+
+```bash
+curl "https://disposable-email-checker.tasciio.workers.dev/v1/check?domain=mailinator.com"
+```
+
+```json
+{"disposable":true}
+```
+
+Check an ordinary provider:
+
+```bash
+curl "https://disposable-email-checker.tasciio.workers.dev/v1/check?domain=gmail.com"
+```
+
+```json
+{"disposable":false}
+```
+
+Use `POST` when checking a full email address so it does not appear in the URL:
+
+```bash
+curl -X POST "https://disposable-email-checker.tasciio.workers.dev/v1/check" \
+  -H "Content-Type: application/json" \
+  --data '{"email":"user@mailinator.com"}'
+```
+
+JavaScript example:
+
+```js
+const response = await fetch(
+  "https://disposable-email-checker.tasciio.workers.dev/v1/check",
+  {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ domain: "mailinator.com" }),
+  },
+);
+
+const { disposable } = await response.json();
+console.log(disposable); // true
+```
 
 ## API
 
-Check an email with GET:
-
-```bash
-curl "http://localhost:8787/v1/check?email=user%40mailinator.com"
-```
-
-Check a domain with POST (recommended when an email address is privacy-sensitive):
-
-```bash
-curl -X POST "http://localhost:8787/v1/check" \
-  -H "Content-Type: application/json" \
-  --data '{"domain":"mailinator.com"}'
-```
-
-Successful response:
+`GET /v1/check` accepts exactly one `email` or `domain` query parameter. `POST /v1/check` accepts exactly one of them in a JSON object. Successful requests return only:
 
 ```json
-{
-  "disposable": true
-}
+{"disposable":true}
 ```
 
-Successful checks return only the boolean classification and never echo the supplied email or
-domain.
+Other public endpoints:
 
-Provide exactly one `email` or `domain`. Invalid input is a `400`; oversized POST bodies are
-`413`; unsupported content is `415`; and throttled requests are `429`. The deployed Worker
-also exposes `GET /health` and an OpenAPI 3.1 document at `GET /openapi.json`.
+- [`GET /health`](https://disposable-email-checker.tasciio.workers.dev/health)
+- [`GET /openapi.json`](https://disposable-email-checker.tasciio.workers.dev/openapi.json)
 
-This API validates conventional email syntax only far enough to safely extract a domain. It
-does not query DNS, check MX records, send mail, or prove that a mailbox exists.
+Invalid input returns `400`, oversized bodies return `413`, unsupported content returns `415`, and throttled requests return `429`.
 
-## Local development
+This service classifies domains only. It does not query DNS or MX records, verify a mailbox, or send email.
 
-Requirements: Node.js 20 or newer. A Cloudflare account is only needed for deployment.
+## Run locally
+
+Requires Node.js 20 or newer:
 
 ```bash
 npm install
 npm run dev
 ```
 
-Run all checks, including a Wrangler production bundle dry run:
+Run the type checker, tests, and Wrangler deployment dry run:
 
 ```bash
 npm run check
 ```
 
-## Contribute to the blacklist
+## Deploy your own
 
-Edit [`data/domains.txt`](data/domains.txt). Keep one lowercase canonical domain per line,
-in alphabetical order. Blank lines and lines beginning with `#` are ignored. A listed parent
-also matches its subdomains, so `mailinator.com` covers `mx.mailinator.com`.
+1. Fork and clone the repository.
+2. Run `npm ci` and `npm run check`.
+3. Give the Worker a unique `name` in `wrangler.jsonc`.
+4. Configure `ALLOWED_ORIGINS` and a unique positive `ratelimits[0].namespace_id`.
+5. Run `npx wrangler login`, followed by `npm run deploy`.
 
-Before opening a pull request, read the [blacklist policy](data/README.md) and
-[contribution guide](CONTRIBUTING.md). Add evidence that the domain provides temporary or
-disposable mailboxes. Do not add ordinary email providers, privacy relays, shared hosting
-domains, or a parent domain that would block legitimate subdomains. Imported lists must have
-terms that allow redistribution in this MIT-licensed repository.
+The blocklist is bundled into the Worker, so blocklist changes require a new deployment.
 
-Validate changes with:
+## Update the blocklist
+
+Edit [`data/domains.txt`](data/domains.txt), keeping one lowercase canonical domain per line in alphabetical order, then run:
 
 ```bash
 npm run validate:data
 ```
 
-The included file contains a complete, pinned snapshot of the CC0-licensed
-`disposable-email-domains` blocklist plus reviewed local changes, currently totaling 7,937
-entries. It is not downloaded or updated at runtime. Production accuracy still depends on
-reviewing upstream changes, local additions, removals, and false positives. The exact source
-commit, local changes, and checksums are documented in the
-[blacklist policy](data/README.md#upstream-snapshot).
+A listed parent covers its subdomains. Include evidence that additions provide temporary or disposable mailboxes, and do not add ordinary email providers, privacy relays, or shared hosting domains. See the [blocklist policy and upstream attribution](data/README.md) before opening a pull request.
 
-## Public API protections
+## Privacy and security
 
-The Worker applies the following controls before it evaluates the blacklist:
+The Worker has no database, accounts, secrets, outbound requests, application analytics, or persistent invocation logging. It applies input limits, security headers, configurable CORS, and Cloudflare-native rate limiting. Prefer `POST` for full email addresses because URLs can appear in infrastructure logs.
 
-- Cloudflare's native rate-limit binding: 100 check attempts per 60 seconds, per connecting
-  IP and Cloudflare location. The binding is permissive/eventually consistent, so it is an
-  abuse brake rather than an accounting mechanism.
-- A 1 KiB POST body limit enforced while streaming, plus a 2 KiB URL limit.
-- Strict route, method, query-field, JSON-shape, content-type, content-encoding, hostname,
-  and conventional email-syntax validation.
-- Generic errors that do not expose stack traces or source-list contents.
-- Restrictive browser/security headers and configurable CORS.
-- Persistent Workers invocation logging is disabled because it includes request URLs. POST avoids
-  placing email addresses in URLs, and successful responses never echo any input.
-- A fail-closed `503` response if the rate-limit binding is missing or unavailable.
-
-The service has no database, outbound requests, secrets, or dynamic code execution. Cloudflare
-provides network-level DDoS protection, but a heavily used deployment should still be monitored
-and may need account-level WAF or bot rules.
-
-### CORS
-
-`ALLOWED_ORIGINS` is `*` by default because this is a public API. To restrict browser callers,
-replace it in `wrangler.jsonc` with a comma-separated exact list such as:
-
-```json
-"ALLOWED_ORIGINS": "https://app.example.com,https://admin.example.com"
-```
-
-CORS is a browser control, not authentication; non-browser clients can supply arbitrary Origin
-headers. Add a real API-key or token system if you later need caller identity or quotas.
-
-## Deploy your own instance
-
-1. Fork this repository, then clone your fork.
-2. Install and verify it:
-
-   ```bash
-   npm ci
-   npm run check
-   ```
-
-3. Give the Worker a unique `name` in `wrangler.jsonc`.
-4. Change `ratelimits[0].namespace_id` if `1001` is already used by another rate limiter in your
-   Cloudflare account. It must be a positive integer represented as a string.
-5. Set `ALLOWED_ORIGINS` in `wrangler.jsonc` to `*` for a public browser API or to a
-   comma-separated list of trusted web origins.
-6. Authenticate once with `npx wrangler login`, then run `npm run deploy`.
-7. Check the deployed `/health` endpoint and optionally attach a custom domain in Cloudflare.
-
-The repository does not need Cloudflare credentials. Its GitHub Actions workflow only validates
-pull requests and performs a local deployment dry run. If you later add automatic deployment,
-store Cloudflare credentials in GitHub Actions secrets, never in the repository.
-
-## Operating a public deployment
-
-Use aggregate Cloudflare metrics to monitor `429` and `5xx` rates. Persistent invocation logging
-is disabled in `wrangler.jsonc`; do not enable it without accounting for email addresses in GET
-query strings and documenting the resulting retention. For a high-traffic instance, review
-Cloudflare account limits and consider account-level WAF or bot-management rules.
-
-The blacklist is bundled as a Wrangler Text module during deployment. Updating the file requires
-a new Worker deployment; there is no runtime storage service or admin mutation endpoint to attack.
-
-## Community and support
-
-Use the issue templates to report a disposable domain, request removal of a false positive, or
-report an API bug. Please use a private GitHub security advisory for vulnerabilities as described
-in [SECURITY.md](SECURITY.md). By participating, you agree to the
-[Code of Conduct](CODE_OF_CONDUCT.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contributions and [SECURITY.md](SECURITY.md) for private vulnerability reports. Released under the [MIT License](LICENSE).
