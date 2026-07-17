@@ -1,0 +1,40 @@
+name: Report a disposable domain
+description: Propose one or more domains for the blacklist
+title: "Blacklist: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping maintain the list. Do not include private email addresses or credentials.
+  - type: textarea
+    id: domains
+    attributes:
+      label: Domains
+      description: Enter one lowercase domain per line. Do not enter URLs or email addresses.
+      placeholder: example.invalid
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Public evidence
+      description: Link evidence showing that each domain provides disposable or temporary inboxes.
+      placeholder: Provider website, documentation, or another independently verifiable source
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: External list source and license
+      description: If copied from another list, link it and state its license. Otherwise, enter "Not copied".
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Submission checks
+      options:
+        - label: These domains directly provide disposable mailboxes and are not ordinary email providers, relays, public suffixes, or shared hosting domains.
+          required: true
+        - label: I have not included personal data, email addresses, or credentials.
+          required: true

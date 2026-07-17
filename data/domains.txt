@@ -1,0 +1,47 @@
+# Disposable email domains. Keep one canonical lowercase domain per line.
+# Contribution requirements: data/README.md and CONTRIBUTING.md.
+# The API also treats subdomains of each entry as disposable.
+10minutemail.com
+10minutemail.net
+20minutemail.com
+33mail.com
+dispostable.com
+emailfake.com
+emailondeck.com
+fakeinbox.com
+fakemail.net
+getairmail.com
+getnada.com
+guerrillamail.biz
+guerrillamail.com
+guerrillamail.de
+guerrillamail.net
+guerrillamail.org
+guerrillamailblock.com
+inboxbear.com
+mailcatch.com
+maildrop.cc
+mailinator.com
+mailinator.net
+mailnesia.com
+mintemail.com
+moakt.com
+mohmal.com
+mytemp.email
+sharklasers.com
+spam4.me
+spamgourmet.com
+temp-mail.org
+tempail.com
+tempemail.net
+tempinbox.com
+tempmail.com
+tempmail.net
+tempmailaddress.com
+throwawaymail.com
+trashmail.com
+trashmail.net
+yopmail.com
+yopmail.fr
+yopmail.gq
+yopmail.net

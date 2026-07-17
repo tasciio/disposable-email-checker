@@ -1,0 +1,43 @@
+name: Report an API bug
+description: Report reproducible incorrect API behavior
+title: "Bug: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For vulnerabilities, stop here and follow SECURITY.md instead of opening a public issue.
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Observed behavior
+      description: Describe what happened. Redact email local parts, tokens, and other private data.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction steps
+      description: Include the route, method, non-sensitive input, response status, and response body.
+    validations:
+      required: true
+  - type: dropdown
+    id: deployment
+    attributes:
+      label: Deployment
+      options:
+        - Local development
+        - Self-hosted Cloudflare Worker
+        - Public project deployment
+    validations:
+      required: true
+  - type: input
+    id: commit
+    attributes:
+      label: Commit or version
+      description: If known, provide the commit SHA or release version.

@@ -1,0 +1,33 @@
+name: Report a false positive
+description: Request review or removal of a legitimate email domain
+title: "False positive: "
+body:
+  - type: input
+    id: domain
+    attributes:
+      label: Domain
+      description: Enter the domain only, without an email address, protocol, path, or port.
+      placeholder: example.com
+    validations:
+      required: true
+  - type: textarea
+    id: legitimate-use
+    attributes:
+      label: Legitimate mailbox use
+      description: Explain how the domain is used for normal, long-lived email mailboxes.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Public evidence
+      description: Link current ownership, service documentation, or other independently verifiable evidence.
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy
+      options:
+        - label: I have not included personal email addresses, credentials, or other private data.
+          required: true
