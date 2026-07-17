@@ -94,6 +94,8 @@ npm run check
 
 The blocklist is bundled into the Worker, so blocklist changes require a new deployment.
 
+The included GitHub Actions workflow automatically validates and deploys whenever `data/domains.txt` changes on `main`. Add `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` as repository Actions secrets. Create the token from Cloudflare's **Edit Cloudflare Workers** template and restrict it to the deployment account.
+
 ## Update the blocklist
 
 Edit [`data/domains.txt`](data/domains.txt), keeping one lowercase canonical domain per line in alphabetical order, then run:
