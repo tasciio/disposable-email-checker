@@ -1,5 +1,5 @@
 {
-  "name": "disposable-email-checker-api",
+  "name": "disposable-email-checker",
   "version": "1.0.0",
   "private": true,
   "description": "A free, public disposable-email domain checker for Cloudflare Workers.",

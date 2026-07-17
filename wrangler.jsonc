@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "disposable-email-checker-api",
+  "name": "disposable-email-checker",
   "main": "src/index.ts",
   "compatibility_date": "2026-07-17",
   "minify": true,
