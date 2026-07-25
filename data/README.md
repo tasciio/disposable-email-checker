@@ -24,9 +24,10 @@ uses this checked-in snapshot and never downloads data during a build or request
 
 - `luckfeed.com` was added locally on 2026-07-17 by maintainer request.
 - `gwshare.com` and `practoso.com` were added locally on 2026-07-25 by maintainer request.
+- `inboxly.website` was added locally on 2026-07-25 by maintainer request.
 
-The deployed `domains.txt`, including local changes, contains 7,939 entries and has SHA-256
-`87f3f691a4fe76120765a3a038340d98627392a26524d185baff5352ba2ce492`.
+The deployed `domains.txt`, including local changes, contains 7,940 entries and has SHA-256
+`bb822ea30ce6d74be4f9c8dd609a1990cebcef50577aeb37a696c52200b65dfc`.
 
 ## File format
 
