@@ -12,11 +12,13 @@ describe("deployed domain list", () => {
     const domains = [...parseDomainList(contents)];
     const checksum = createHash("sha256").update(contents).digest("hex");
 
-    expect(domains).toHaveLength(7_937);
+    expect(domains).toHaveLength(7_939);
     expect(domains).toEqual([...domains].sort());
     expect(checksum).toBe(
-      "77d79c9ce1a1961b18f13072814078d1427ae898a9d0b07c8108804936d3c032",
+      "87f3f691a4fe76120765a3a038340d98627392a26524d185baff5352ba2ce492",
     );
     expect(domains).toContain("luckfeed.com");
+    expect(domains).toContain("gwshare.com");
+    expect(domains).toContain("practoso.com");
   });
 });
